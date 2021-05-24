@@ -1,7 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
+import 'package:sit_lb_2021/routes/map.dart';
+
 
 class Homepage extends StatefulWidget {
   Homepage({Key key, this.title}) : super(key: key);
@@ -13,11 +14,11 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-
-
   Widget _entryField(String title, {bool isPassword = false}) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 20,),
+      margin: EdgeInsets.symmetric(
+        vertical: 20,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -40,26 +41,35 @@ class _HomepageState extends State<Homepage> {
   }
 
   Widget _submitButton() {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5)),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: Colors.grey.shade200,
-                offset: Offset(2, 4),
-                blurRadius: 5,
-                spreadRadius: 2)
-          ],
-          gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [Colors.lightBlue, Colors.blue.shade800])),
-      child: Text(
-        'Login',
-        style: TextStyle(fontSize: 20, color: Colors.white),
+    return FlatButton(
+        onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Maps(),
+          ),
+        );
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                  color: Colors.grey.shade200,
+                  offset: Offset(2, 4),
+                  blurRadius: 5,
+                  spreadRadius: 2)
+            ],
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [Colors.lightBlue, Colors.blue.shade800])),
+        child: Text(
+          'Login',
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
       ),
     );
   }
@@ -96,9 +106,6 @@ class _HomepageState extends State<Homepage> {
       ),
     );
   }
-
-
-
 
   Widget _createAccountLabel() {
     return Container(
@@ -162,11 +169,13 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-        body: Container(
-          height: height,
-          child: Stack(
-            children: <Widget>[
-              Column(
+        body: SingleChildScrollView(
+      child: Container(
+        height: height,
+        child: Stack(
+          children: <Widget>[
+            SingleChildScrollView(
+              child: Column(
                 children: [
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: height * .6),
@@ -189,25 +198,22 @@ class _HomepageState extends State<Homepage> {
                         ),
                         SizedBox(height: height * .01),
                         _createAccountLabel(),
-
-
                       ],
                     ),
                   ),
                   ClipPath(
-                    clipper: WaveClipperTwo(flip: true,reverse: true),
+                    clipper: WaveClipperTwo(flip: true, reverse: true),
                     child: Container(
-                      height: height * 0.22,
+                      height: height * 0.23,
                       color: Colors.blueAccent,
                     ),
                   ),
                 ],
               ),
-
-            ],
-          ),
-        ));
+            ),
+          ],
+        ),
+      ),
+    ));
   }
 }
-
-
