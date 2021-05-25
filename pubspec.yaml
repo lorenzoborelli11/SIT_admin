@@ -30,9 +30,11 @@ dependencies:
   flutter_map: any
   meet_network_image: any
   #google_maps_flutter: any
-  #place_picker: ^0.9.18
+  place_picker: any
+  latlong: any
+  map_controller: ^0.9.0
   #flutter_map: ^0.12.0
-  #geolocator: any
+  geolocator: any
   #permission_handler: any
   #provider: any
   #google_maps_webservice: any

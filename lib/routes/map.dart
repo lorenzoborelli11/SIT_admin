@@ -1,8 +1,12 @@
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:latlng/latlng.dart';
-import 'package:map/map.dart';
-import 'package:meet_network_image/meet_network_image.dart';
+import 'package:flutter_map/plugin_api.dart';
+
+import "package:latlong/latlong.dart" as LatLng;
+import 'package:map_controller/map_controller.dart';
+import 'package:sit_lb_2021/utils/dragmarker.dart';
 
 
 
@@ -12,95 +16,160 @@ class Maps extends StatefulWidget {
 }
 
 class _MapsState extends State<Maps> {
+
+  MapController mapController;
+  StatefulMapController statefulMapController;
+  StreamSubscription<StatefulMapControllerStateChange> sub;
+
+  @override
+  void initState() {
+    // intialize the controllers
+    mapController = MapController();
+    statefulMapController = StatefulMapController(mapController: mapController);
+
+    // wait for the controller to be ready before using it
+    statefulMapController.onReady.then((_) => print("The map controller is ready"));
+
+    /// [Important] listen to the changefeed to rebuild the map on changes:
+    /// this will rebuild the map when for example addMarker or any method
+    /// that mutates the map assets is called
+    sub = statefulMapController.changeFeed.listen((change) => setState(() {}));
+    super.initState();
+    }
+  
+  
   @override
   Widget build(BuildContext context) {
-    final controller = MapController(
-      location: LatLng(46.13, 12.21),
-    );
-
-    void _gotoDefault() {
-      controller.center = LatLng(46.13, 12.21);
-    }
-
-    void _onDoubleTap() {
-      controller.zoom += 0.5;
-    }
-
-    Offset _dragStart;
-    double _scaleStart = 1.0;
-    void _onScaleStart(ScaleStartDetails details) {
-      _dragStart = details.focalPoint;
-      _scaleStart = 1.0;
-    }
-
-    void _onScaleUpdate(ScaleUpdateDetails details) {
-      final scaleDiff = details.scale - _scaleStart;
-      _scaleStart = details.scale;
-
-      if (scaleDiff > 0) {
-        controller.zoom += 0.02;
-      } else if (scaleDiff < 0) {
-        controller.zoom -= 0.02;
-      } else {
-        final now = details.focalPoint;
-        final diff = now - _dragStart;
-        _dragStart = now;
-        controller.drag(diff.dx, diff.dy);
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Map Demo'),
+        title: Center(child: Text('Benvenuti in SIT Hydrography')),
       ),
-      body: GestureDetector(
-        onDoubleTap: _onDoubleTap,
-        onScaleStart: _onScaleStart,
-        onScaleUpdate: _onScaleUpdate,
-        onScaleEnd: (details) {
-          print(
-              "Location: ${controller.center.latitude}, ${controller.center.longitude}");
-        },
-        child: Stack(
-          children: [
-            Map(
-              controller: controller,
-              builder: (context, x, y, z) {
-                final url =
-                    'https://www.google.com/maps/vt/pb=!1m4!1m3!1i$z!2i$x!3i$y!2m3!1e0!2sm!3i420120488!3m7!2sen!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0!23i4111425';
-
-                return Image.network(url);
-
-
-              },
+      body: Stack(
+        children: [
+          FlutterMap(
+            mapController: mapController,
+            options: MapOptions(
+              plugins: [
+                DragMarkerPlugin(),
+              ],
+              center: LatLng.LatLng(46.1503, 12.2171),
+              zoom: 13.0,
             ),
+            layers: [
+              MarkerLayerOptions(markers: statefulMapController.markers),
+              PolylineLayerOptions(polylines: statefulMapController.lines),
+              PolygonLayerOptions(polygons: statefulMapController.polygons),
+              TileLayerOptions(
+                  urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  subdomains: ['a', 'b', 'c']
+              ),
 
-          ],
-        ),
+              MarkerLayerOptions(
+
+                markers: [
+
+                  Marker(
+                    width: 80.0,
+                    height: 80.0,
+                    point: LatLng.LatLng(46.1503, 12.2171),
+                    builder: (ctx) =>
+                        Container(
+                            child: IconButton(
+                              icon: Icon(Icons.room_sharp),
+                              color: Colors.blueAccent,
+                              iconSize: 30,
+                              onPressed: () {
+                                showModalBottomSheet(
+                                    context: context,
+                                    builder: (builder) {
+                                      return Container(
+                                        color: Colors.white,
+                                        child: Center(child: Text("blblaaasdas")),);
+                                    }
+                                );
+                              },
+                            )
+                        ),
+                  ),
+
+
+                Marker(
+                  width: 80.0,
+                  height: 80.0,
+                  point: LatLng.LatLng(46.26, 12.29),
+                  builder: (ctx) =>
+                      Container(
+                          child: IconButton(
+                            icon: Icon(Icons.report_rounded),
+                            color: Colors.redAccent,
+                            iconSize: 30,
+                            onPressed: () {
+                              showModalBottomSheet(
+                                  context: context,
+                                  builder: (builder) {
+                                    return Container(
+                                      color: Colors.white,
+                                      child: Center(child: Text("blblaaasdas")),);
+                                  }
+                              );
+                            },
+                          )
+                      ),
+                ),
+                ],
+
+
+              ),
+              DragMarkerPluginOptions(
+                markers: [
+                  DragMarker(
+                    point: LatLng.LatLng(46.1503, 12.2171),
+                    width: 80.0,
+                    height: 80.0,
+                    offset: Offset(0.0, -8.0),
+                    builder: (ctx) => Container( child: Icon(Icons.location_on, size: 50) ),
+                    onDragStart:  (details,point) => print("Start point $point"),
+                    onDragEnd:    (details,point) => print("End point $point"),
+                    onDragUpdate: (details,point) {},
+                    onTap:        (point) { print("on tap"); },
+                    onLongPress:  (point) { print("on long press"); },
+                    feedbackBuilder: (ctx) => Container( child: Icon(Icons.edit_location, size: 75) ),
+                    feedbackOffset: Offset(0.0, -18.0),
+                    updateMapNearEdge: true,
+                    nearEdgeRatio: 2.0,
+                    nearEdgeSpeed: 1.0,
+                  ),
+
+                ],
+              ),
+            ],
+          ),
+
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _gotoDefault,
-        tooltip: 'My Location',
-        child: Icon(Icons.my_location),
+
+
+
+
+
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          // Add your onPressed code here!
+        },
+        label: const Text('Segnala', style: TextStyle(color: Colors.black),),
+        icon: const Icon(Icons.add_circle_rounded, color: Colors.black,),
+        backgroundColor: Colors.redAccent,
       ),
     );
+
+
+
+  }
+
+  @override
+  void dispose() {
+    sub.cancel();
+    super.dispose();
   }
 }
 
-/*Container(
-                        child: IconButton(
-                          icon: Icon(Icons.maps_ugc_outlined),
-                          color: Colors.blueAccent,
-                          iconSize: 40,
-                          onPressed: () {
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (builder) {
-                                return Container(
-                                  color: Colors.white,
-                                  child: Center(child: Text("blblaaasdas")),);
-                              }
-                            );
-                          },
-                        )
-                      ),*/
