@@ -158,7 +158,7 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
     /// If we're near an edge, move the map to compensate.
     if(marker.updateMapNearEdge != null && marker.updateMapNearEdge) {
 
-      /// How much we'll move the map by to compensate
+
       var autoOffsetX = 0.0;
       var autoOffsetY = 0.0;
 
@@ -171,9 +171,6 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
       if (pixelPoint.y + marker.height * marker.nearEdgeRatio >=
           pixelB.bottomLeft.y) autoOffsetY = marker.nearEdgeSpeed;
 
-      /// Sometimes when dragging the onDragEnd doesn't fire, so just stops dead.
-      /// Here we allow a bit of time to keep dragging whilst user may move
-      /// around a bit to keep it going.
       var lastTick = 0;
       if (autoDragTimer != null) lastTick = autoDragTimer.tick;
 
@@ -208,7 +205,6 @@ class _DragMarkerWidgetState extends State<DragMarkerWidget> {
   }
 
 
-  /// If dragging near edge of the screen, adjust the map so we keep dragging
   void adjustMapToMarker(DragMarkerWidget widget, autoOffsetX, autoOffsetY) {
     DragMarker marker = widget.marker;
     MapState mapState = widget.mapState;
