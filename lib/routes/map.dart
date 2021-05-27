@@ -48,14 +48,6 @@ class _MapsState extends State<Maps> {
       animationCurve: Curves.easeInOut,
       animationDuration: const Duration(milliseconds: 300),
       childDecoration: const BoxDecoration(
-        // NOTICE: Uncomment if you want to add shadow behind the page.
-        // Keep in mind that it may cause animation jerks.
-        // boxShadow: <BoxShadow>[
-        //   BoxShadow(
-        //     color: Colors.black12,
-        //     blurRadius: 0.0,
-        //   ),
-        // ],
         borderRadius: const BorderRadius.all(Radius.circular(16)),
       ),
       child: Scaffold(
@@ -177,13 +169,13 @@ class _MapsState extends State<Maps> {
           },
           label: const Text(
             'Segnala',
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(color: Colors.white),
           ),
           icon: const Icon(
             Icons.add_circle_rounded,
-            color: Colors.black,
+            color: Colors.white,
           ),
-          backgroundColor: Colors.redAccent,
+          backgroundColor: Colors.blueGrey,
         ),
       ),
       drawer: MyDrawer(),

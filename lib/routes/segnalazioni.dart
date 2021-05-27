@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:sit_lb_2021/routes/drawer.dart';
 
 class Segnalazioni extends StatefulWidget {
@@ -10,32 +11,46 @@ class Segnalazioni extends StatefulWidget {
 class _SegnalazioniState extends State<Segnalazioni> {
   final _advancedDrawerController = AdvancedDrawerController();
 
+  Widget _title() {
+    return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+          text: 'S',
+          style: GoogleFonts.portLligatSans(
+            textStyle: Theme.of(context).textTheme.display1,
+            fontSize: 30,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+          children: [
+            TextSpan(
+              text: 'IT',
+              style: TextStyle(color: Colors.black, fontSize: 30),
+            ),
+            TextSpan(
+              text: ' Segnalazioni ',
+              style: TextStyle(color: Colors.white, fontSize: 30),
+            ),
+          ]),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
     return AdvancedDrawer(
       backdropColor: Colors.blueGrey,
       controller: _advancedDrawerController,
       animationCurve: Curves.easeInOut,
       animationDuration: const Duration(milliseconds: 300),
       childDecoration: const BoxDecoration(
-        // NOTICE: Uncomment if you want to add shadow behind the page.
-        // Keep in mind that it may cause animation jerks.
-        // boxShadow: <BoxShadow>[
-        //   BoxShadow(
-        //     color: Colors.black12,
-        //     blurRadius: 0.0,
-        //   ),
-        // ],
         borderRadius: const BorderRadius.all(Radius.circular(16)),
       ),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.black54,
-          title: Center(
-              child: const Text(
-            'SIT Hydrography',
-            style: TextStyle(color: Colors.white),
-          )),
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
@@ -49,7 +64,37 @@ class _SegnalazioniState extends State<Segnalazioni> {
           ),
         ),
         body: Container(
-          child: Center(child: Text("Segnalazioni")),
+            color: Colors.blueGrey,
+
+
+          child: Column(
+            children: [
+              Container(padding: EdgeInsets.all(30),
+                child: _title(),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: width * 0.1, right: width * 0.1),
+                padding: EdgeInsets.only(left: width * 0.1, right: width * 0.1),
+                decoration: BoxDecoration(
+
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(40)),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Order("11 gennaio","191", "Lorenzo", "Borelli", "12", "scarico rifiuti"),
+                      Order("11 gennaio","191", "Lorenzo", "Borelli", "12", "scarico rifiuti"),
+                      Order("11 gennaio","191", "Lorenzo", "Borelli", "12", "scarico rifiuti"),
+
+                    ],
+                  ),
+                ),
+              ),
+
+            ],
+          )
+
         ),
       ),
       drawer: MyDrawer(),
@@ -63,7 +108,7 @@ class _SegnalazioniState extends State<Segnalazioni> {
   }
 
   Widget Order(dynamic date, dynamic numberorder, dynamic name, dynamic surname,
-      dynamic price, dynamic status, Function OnPressed) {
+      dynamic price, dynamic status) {
     return GestureDetector(
       child: SingleChildScrollView(
         child: Column(
@@ -177,7 +222,7 @@ class _SegnalazioniState extends State<Segnalazioni> {
           ],
         ),
       ),
-      onTap: OnPressed,
+      onTap:() {},
     );
   }
 }

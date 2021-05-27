@@ -65,7 +65,7 @@ class _HomepageState extends State<Homepage> {
             gradient: LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
-                colors: [Colors.lightBlue, Colors.blue.shade800])),
+                colors: [Colors.blueGrey, Colors.blueGrey.shade800])),
         child: Text(
           'Login',
           style: TextStyle(fontSize: 20, color: Colors.white),
@@ -123,7 +123,7 @@ class _HomepageState extends State<Homepage> {
           Text(
             'Contact our office',
             style: TextStyle(
-                color: Colors.blueAccent,
+                color: Colors.blueGrey,
                 fontSize: 13,
                 fontWeight: FontWeight.w600),
           ),
@@ -205,7 +205,7 @@ class _HomepageState extends State<Homepage> {
                     clipper: WaveClipperTwo(flip: true, reverse: true),
                     child: Container(
                       height: height * 0.23,
-                      color: Colors.blueAccent,
+                      color: Colors.blueGrey,
                     ),
                   ),
                 ],
