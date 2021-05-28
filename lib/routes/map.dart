@@ -52,7 +52,7 @@ class _MapsState extends State<Maps> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.black54,
+          backgroundColor: Colors.red.shade900,
           title: Center(child: const Text('SIT Hydrography', style: TextStyle(color: Colors.white),)),
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
@@ -175,7 +175,7 @@ class _MapsState extends State<Maps> {
             Icons.add_circle_rounded,
             color: Colors.white,
           ),
-          backgroundColor: Colors.blueGrey,
+          backgroundColor: Colors.red.shade900,
         ),
       ),
       drawer: MyDrawer(),

@@ -25,13 +25,16 @@ dependencies:
     sdk: flutter
 
 
+
+  firebase_core: ^1.2.0
+  firebase_auth: ^1.2.0
   flutter_advanced_drawer: any
   latlng: any
   map: any
-  path_provider: ^2.0.2
+  path_provider: any
   google_fonts: any
   flutter_map: any
-  meet_network_image: any
+  #meet_network_image: any
   #google_maps_flutter: any
   place_picker: any
   latlong: any
@@ -39,7 +42,7 @@ dependencies:
   #flutter_map: ^0.12.0
   geolocator: any
   #permission_handler: any
-  #provider: any
+  provider: ^5.0.0
   #google_maps_webservice: any
   #google_api_headers: any
   #tuple: any

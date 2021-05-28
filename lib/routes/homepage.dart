@@ -2,19 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:sit_lb_2021/routes/map.dart';
-
+import 'package:sit_lb_2021/service/authenticationservice.dart';
+import 'package:provider/provider.dart';
 
 class Homepage extends StatefulWidget {
   Homepage({Key key, this.title}) : super(key: key);
 
   final String title;
 
+
   @override
   _HomepageState createState() => _HomepageState();
 }
 
 class _HomepageState extends State<Homepage> {
-  Widget _entryField(String title, {bool isPassword = false}) {
+
+  final TextEditingController emailcontroller = TextEditingController();
+  final TextEditingController passwordcontroller = TextEditingController();
+
+  Widget _entryField(String title, TextEditingController controller, {bool isPassword = false}) {
     return Container(
       margin: EdgeInsets.symmetric(
         vertical: 20,
@@ -30,6 +36,7 @@ class _HomepageState extends State<Homepage> {
             height: 10,
           ),
           TextField(
+            controller: controller ,
               obscureText: isPassword,
               decoration: InputDecoration(
                   border: InputBorder.none,
@@ -41,13 +48,20 @@ class _HomepageState extends State<Homepage> {
   }
 
   Widget _submitButton() {
-    return FlatButton(
+    return RaisedButton(
         onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Maps(),
-          ),
-        );
+
+          context.read<AuthenticationService>().signIn(
+            email: emailcontroller.text,
+            password: passwordcontroller.text,
+
+          );
+
+        //Navigator.push(
+         // context,
+         // MaterialPageRoute(builder: (context) => Maps(),
+          //),
+        //);
       },
       child: Container(
         width: MediaQuery.of(context).size.width,
@@ -141,7 +155,7 @@ class _HomepageState extends State<Homepage> {
             textStyle: Theme.of(context).textTheme.display1,
             fontSize: 30,
             fontWeight: FontWeight.w700,
-            color: Color(0xffe46b10),
+            color: Colors.red.shade900,
           ),
           children: [
             TextSpan(
@@ -150,7 +164,7 @@ class _HomepageState extends State<Homepage> {
             ),
             TextSpan(
               text: ' Hydrography',
-              style: TextStyle(color: Color(0xffe46b10), fontSize: 30),
+              style: TextStyle(color: Colors.red.shade900, fontSize: 30),
             ),
           ]),
     );
@@ -159,8 +173,8 @@ class _HomepageState extends State<Homepage> {
   Widget _emailPasswordWidget() {
     return Column(
       children: <Widget>[
-        _entryField("Email id"),
-        _entryField("Password", isPassword: true),
+        _entryField("Email id", emailcontroller),
+        _entryField("Password", passwordcontroller ,isPassword: true),
       ],
     );
   }
@@ -169,51 +183,47 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-        body: SingleChildScrollView(
-      child: Container(
-        height: height,
-        child: Stack(
-          children: <Widget>[
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: height * .6),
+        body: Container(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: height * .6),
+                  child: SingleChildScrollView(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        SizedBox(height: height * .08),
-                        _title(),
-                        SizedBox(height: 30),
-                        _emailPasswordWidget(),
-                        SizedBox(height: 20),
-                        _submitButton(),
-                        Container(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          alignment: Alignment.centerRight,
-                          child: Text('Forgot Password ?',
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w500)),
-                        ),
-                        SizedBox(height: height * .01),
-                        _createAccountLabel(),
-                      ],
-                    ),
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(height: height * .04),
+                      _title(),
+                      SizedBox(height: height * .04),
+                      _emailPasswordWidget(),
+                      SizedBox(height: height * .04),
+                      _submitButton(),
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        alignment: Alignment.centerRight,
+                        child: Text('Forgot Password ?',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w500)),
+                      ),
+                      SizedBox(height: height * .01),
+                      _createAccountLabel(),
+                    ],
+                  ),),
+                ),
+
+                ClipPath(
+                  clipper: WaveClipperTwo(flip: true, reverse: true),
+                  child: Container(
+                    height: height* 0.26,
+                    color: Colors.blueGrey,
                   ),
-                  ClipPath(
-                    clipper: WaveClipperTwo(flip: true, reverse: true),
-                    child: Container(
-                      height: height * 0.23,
-                      color: Colors.blueGrey,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+
+              ],
             ),
-          ],
-        ),
-      ),
-    ));
+          ),
+        ));
   }
 }

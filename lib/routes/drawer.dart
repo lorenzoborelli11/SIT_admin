@@ -3,6 +3,8 @@ import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:sit_lb_2021/routes/homepage.dart';
 import 'package:sit_lb_2021/routes/map.dart';
 import 'package:sit_lb_2021/routes/segnalazioni.dart';
+import 'package:sit_lb_2021/service/authenticationservice.dart';
+import 'package:provider/provider.dart';
 
 class MyDrawer extends StatefulWidget {
   @override
@@ -60,11 +62,15 @@ class _MyDrawerState extends State<MyDrawer> {
               ),
               ListTile(
                 onTap: () {
+                  context.read<AuthenticationService>().signOut();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Homepage(),
                     ),
-                  ); },
+                  );
+                },
+
+
                 leading: Icon(Icons.account_circle_rounded),
                 title: Text('Logout'),
               ),

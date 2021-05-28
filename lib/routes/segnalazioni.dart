@@ -50,7 +50,7 @@ class _SegnalazioniState extends State<Segnalazioni> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.black54,
+          backgroundColor: Colors.red.shade900,
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
