@@ -10,17 +10,16 @@ class Homepage extends StatefulWidget {
 
   final String title;
 
-
   @override
   _HomepageState createState() => _HomepageState();
 }
 
 class _HomepageState extends State<Homepage> {
-
   final TextEditingController emailcontroller = TextEditingController();
   final TextEditingController passwordcontroller = TextEditingController();
 
-  Widget _entryField(String title, TextEditingController controller, {bool isPassword = false}) {
+  Widget _entryField(String title, TextEditingController controller,
+      {bool isPassword = false}) {
     return Container(
       margin: EdgeInsets.symmetric(
         vertical: 20,
@@ -36,11 +35,23 @@ class _HomepageState extends State<Homepage> {
             height: 10,
           ),
           TextField(
-            controller: controller ,
+              controller: controller,
               obscureText: isPassword,
               decoration: InputDecoration(
-                  border: InputBorder.none,
+                  border: new OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(45.0),
+                    ),
+                  ),
                   fillColor: Color(0xfff3f3f4),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(45.0)),
+                      borderSide: BorderSide(
+                        color: Colors.red.shade900,
+                      )),
+                  labelStyle: new TextStyle(
+                    color: Colors.red.shade900,
+                  ),
                   filled: true))
         ],
       ),
@@ -48,41 +59,40 @@ class _HomepageState extends State<Homepage> {
   }
 
   Widget _submitButton() {
-    return RaisedButton(
-        onPressed: () {
-
-          context.read<AuthenticationService>().signIn(
-            email: emailcontroller.text,
-            password: passwordcontroller.text,
-
-          );
-
-        //Navigator.push(
-         // context,
-         // MaterialPageRoute(builder: (context) => Maps(),
-          //),
-        //);
-      },
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-        alignment: Alignment.center,
+    return Container(
+      child: Ink(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                  color: Colors.grey.shade200,
-                  offset: Offset(2, 4),
-                  blurRadius: 5,
-                  spreadRadius: 2)
-            ],
-            gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [Colors.blueGrey, Colors.blueGrey.shade800])),
-        child: Text(
-          'Login',
-          style: TextStyle(fontSize: 20, color: Colors.white),
+          borderRadius: BorderRadius.all(Radius.circular(45)),
+          gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [Colors.blueGrey, Colors.blueGrey.shade800]),
+        ),
+
+        child: MaterialButton(
+        onPressed: () {
+          context.read<AuthenticationService>().signIn(
+                email: emailcontroller.text,
+                password: passwordcontroller.text,
+              );
+        },
+
+          //Navigator.push(
+          // context,
+          // MaterialPageRoute(builder: (context) => Maps(),
+          //),
+          //);
+
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              vertical: 15,
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              'Login',
+              style: TextStyle(fontSize: 20, color: Colors.white),
+            ),
+          ),
         ),
       ),
     );
@@ -174,7 +184,7 @@ class _HomepageState extends State<Homepage> {
     return Column(
       children: <Widget>[
         _entryField("Email id", emailcontroller),
-        _entryField("Password", passwordcontroller ,isPassword: true),
+        _entryField("Password", passwordcontroller, isPassword: true),
       ],
     );
   }
@@ -184,46 +194,45 @@ class _HomepageState extends State<Homepage> {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
         body: Container(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: height * .6),
-                  child: SingleChildScrollView(
-                    child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(height: height * .04),
-                      _title(),
-                      SizedBox(height: height * .04),
-                      _emailPasswordWidget(),
-                      SizedBox(height: height * .04),
-                      _submitButton(),
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        alignment: Alignment.centerRight,
-                        child: Text('Forgot Password ?',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500)),
-                      ),
-                      SizedBox(height: height * .01),
-                      _createAccountLabel(),
-                    ],
-                  ),),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: height * .6),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(height: height * .04),
+                    _title(),
+                    SizedBox(height: height * .04),
+                    _emailPasswordWidget(),
+                    SizedBox(height: height * .04),
+                    _submitButton(),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      alignment: Alignment.centerRight,
+                      child: Text('Forgot Password ?',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w500)),
+                    ),
+                    SizedBox(height: height * .01),
+                    _createAccountLabel(),
+                  ],
                 ),
-
-                ClipPath(
-                  clipper: WaveClipperTwo(flip: true, reverse: true),
-                  child: Container(
-                    height: height* 0.26,
-                    color: Colors.blueGrey,
-                  ),
-                ),
-
-              ],
+              ),
             ),
-          ),
-        ));
+            ClipPath(
+              clipper: WaveClipperTwo(flip: true, reverse: true),
+              child: Container(
+                height: height * 0.26,
+                color: Colors.blueGrey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ));
   }
 }

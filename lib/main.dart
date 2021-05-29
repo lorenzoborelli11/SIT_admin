@@ -29,9 +29,6 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'SIT Hydropgraphy',
-      theme: ThemeData(
-
-      ),
       home: AuthenticationWrapper(),
       ),
     );

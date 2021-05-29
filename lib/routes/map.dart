@@ -3,6 +3,7 @@ import 'dart:math' as math show pi;
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_map/plugin_api.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import "package:latlong/latlong.dart" as LatLng;
 import 'package:map_controller/map_controller.dart';
@@ -51,9 +52,31 @@ class _MapsState extends State<Maps> {
         borderRadius: const BorderRadius.all(Radius.circular(16)),
       ),
       child: Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
-          backgroundColor: Colors.red.shade900,
-          title: Center(child: const Text('SIT Hydrography', style: TextStyle(color: Colors.white),)),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          title: Center(child: RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+                text: 'S',
+                style: GoogleFonts.portLligatSans(
+                  textStyle: Theme.of(context).textTheme.display1,
+                  fontSize: 30,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.red.shade900,
+                ),
+                children: [
+                  TextSpan(
+                    text: 'IT',
+                    style: TextStyle(color: Colors.black, fontSize: 30),
+                  ),
+                  TextSpan(
+                    text: ' Hydrography',
+                    style: TextStyle(color: Colors.red.shade900, fontSize: 30),
+                  ),
+                ]),
+          ),),
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
@@ -61,6 +84,7 @@ class _MapsState extends State<Maps> {
               builder: (context, value, child) {
                 return Icon(
                   value.visible ? Icons.clear : Icons.menu,
+                  color: Colors.red.shade900,
                 );
               },
             ),
@@ -94,7 +118,7 @@ class _MapsState extends State<Maps> {
                       builder: (ctx) => Container(
                           child: IconButton(
                         icon: Icon(Icons.room_sharp),
-                        color: Colors.blueAccent,
+                        color: Colors.red.shade900,
                         iconSize: 30,
                         onPressed: () {
                           showModalBottomSheet(
