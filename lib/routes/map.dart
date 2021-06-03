@@ -3,6 +3,7 @@ import 'dart:math' as math show pi;
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_map/plugin_api.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import "package:latlong/latlong.dart" as LatLng;
@@ -19,6 +20,9 @@ class _MapsState extends State<Maps> {
   MapController mapController;
   StatefulMapController statefulMapController;
   StreamSubscription<StatefulMapControllerStateChange> sub;
+
+  TextEditingController tiposegnalazione = TextEditingController();
+  TextEditingController descrizione = TextEditingController();
 
   @override
   void initState() {
@@ -39,10 +43,16 @@ class _MapsState extends State<Maps> {
 
   final _advancedDrawerController = AdvancedDrawerController();
 
+  Function postSegnalazione(
+      LatLng, DateTime date, String tiposegnalaz, String descrizione,
+      {String image}) {
+
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-
+    final width = MediaQuery.of(context).size.width;
     return AdvancedDrawer(
       backdropColor: Colors.blueGrey,
       controller: _advancedDrawerController,
@@ -56,27 +66,30 @@ class _MapsState extends State<Maps> {
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.transparent,
-          title: Center(child: RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-                text: 'S',
-                style: GoogleFonts.portLligatSans(
-                  textStyle: Theme.of(context).textTheme.display1,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.red.shade900,
-                ),
-                children: [
-                  TextSpan(
-                    text: 'IT',
-                    style: TextStyle(color: Colors.black, fontSize: 30),
+          title: Center(
+            child: RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                  text: 'S',
+                  style: GoogleFonts.portLligatSans(
+                    textStyle: Theme.of(context).textTheme.display1,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.red.shade900,
                   ),
-                  TextSpan(
-                    text: ' Hydrography',
-                    style: TextStyle(color: Colors.red.shade900, fontSize: 30),
-                  ),
-                ]),
-          ),),
+                  children: [
+                    TextSpan(
+                      text: 'IT',
+                      style: TextStyle(color: Colors.black, fontSize: 30),
+                    ),
+                    TextSpan(
+                      text: ' Hydrography',
+                      style:
+                          TextStyle(color: Colors.red.shade900, fontSize: 30),
+                    ),
+                  ]),
+            ),
+          ),
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
@@ -172,7 +185,74 @@ class _MapsState extends State<Maps> {
                         print("on tap");
                       },
                       onLongPress: (point) {
-                        print("on long press");
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (builder) {
+                              return SingleChildScrollView(
+                                child: Container(
+                                  margin: EdgeInsets.only(
+                                      left: width * 0.3, right: width * 0.3),
+                                  child: Center(
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        _segnalaField("Tipo di segnalazione: ",
+                                            tiposegnalazione),
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        _segnalaField(
+                                            "Descrizione: ", descrizione),
+                                        SizedBox(
+                                          height: 35,
+                                        ),
+                                    Container(
+                                      child: Ink(
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.shade900,
+                                          borderRadius: BorderRadius.all(Radius.circular(40)),
+                                        ),
+                                        child: MaterialButton(
+                                          onPressed: () {
+                                            postSegnalazione(point, DateTime.now(), tiposegnalazione.text, descrizione.text);
+                                            //print(point);
+                                            //print(DateTime.now());
+                                            //print( tiposegnalazione.text + descrizione.text);
+                                            Fluttertoast.showToast(
+                                            msg:
+                                            "Grazie! La tua segnalazione è avvenuta con successo!",
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.CENTER,
+                                            timeInSecForIosWeb: 1,
+                                            backgroundColor: Color(0xFF424242),
+                                            textColor: Colors.white,
+                                            fontSize: 16.0);
+
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 10,
+                                            ),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              'Segnala',
+                                              style: TextStyle(fontSize: 20, color: Colors.white),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            });
                       },
                       feedbackBuilder: (ctx) =>
                           Container(child: Icon(Icons.edit_location, size: 75)),
@@ -189,7 +269,15 @@ class _MapsState extends State<Maps> {
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
-            // Add your onPressed code here!
+            Fluttertoast.showToast(
+                msg:
+                    "Muovi il cursore nero nella posizione desiderata, successivamente tieni premuto lo stesso per 2 secondi.",
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Color(0xFF424242),
+                textColor: Colors.white,
+                fontSize: 16.0);
           },
           label: const Text(
             'Segnala',
@@ -203,6 +291,70 @@ class _MapsState extends State<Maps> {
         ),
       ),
       drawer: MyDrawer(),
+    );
+  }
+
+  Widget _segnalaField(String title, TextEditingController controller,
+      {bool isPassword = false}) {
+    return Container(
+      margin: EdgeInsets.symmetric(
+        vertical: 5,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            title,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          TextField(
+              controller: controller,
+              obscureText: isPassword,
+              decoration: InputDecoration(
+                  border: new OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(12.0),
+                    ),
+                  ),
+                  fillColor: Color(0xfff3f3f4),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                      )),
+                  labelStyle: new TextStyle(
+                    color: Colors.red.shade900,
+                  ),
+                  filled: true))
+        ],
+      ),
+    );
+  }
+
+  Widget _submitSegnala() {
+    return Container(
+      child: Ink(
+        decoration: BoxDecoration(
+          color: Colors.red.shade900,
+          borderRadius: BorderRadius.all(Radius.circular(40)),
+        ),
+        child: MaterialButton(
+          onPressed: () {},
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              vertical: 10,
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              'Segnala',
+              style: TextStyle(fontSize: 20, color: Colors.white),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

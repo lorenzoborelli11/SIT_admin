@@ -27,7 +27,11 @@ class _SegnalazioniState extends State<Segnalazioni> {
               controller: controller,
               obscureText: isPassword,
               decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search, color: Colors.blueGrey,),
+                  prefixIcon: IconButton(
+                    icon: Icon(Icons.search),
+                    color: Colors.blueGrey,
+                    onPressed: () {},
+                  ),
                   border: new OutlineInputBorder(
                     borderRadius: const BorderRadius.all(
                       const Radius.circular(45.0),
@@ -106,53 +110,61 @@ class _SegnalazioniState extends State<Segnalazioni> {
           
         ),
         body: SingleChildScrollView(
-          child: Container(
-            color: Colors.blueGrey,
-
-
           child: Column(
             children: [
-              Container(padding: EdgeInsets.only(left:width * 0.1+ 20, right: width * 0.1 + 20, top: 30, bottom: 30),
-                child: Row(
-                  children: [
-                    Container(
-                        alignment: Alignment.centerLeft,
-                        child: _title()),
-                    Expanded(
-                      child: Container(
-                          alignment: Alignment.centerRight,
-                          child: _searchField(searchcontroller),),
-                    ),
+              Container(
+                color: Colors.blueGrey,
 
-                  ],
-                ),
-              ),
-              SingleChildScrollView(
-                child: Container(
-                  margin: EdgeInsets.only(left: width * 0.1, right: width * 0.1),
-                  padding: EdgeInsets.only(left: width * 0.1, right: width * 0.1),
-                  decoration: BoxDecoration(
 
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(40)),
-                  ),
-                  child: SingleChildScrollView(
-                    child: Column(
+              child: Column(
+                children: [
+                  Container(padding: EdgeInsets.only(left:width * 0.1+ 20, right: width * 0.1 + 20, top: 30, bottom: 30),
+                    child: Row(
                       children: [
-                        Order("11 gennaio 2021","191", "Lorenzo", "Lat 1231231, Long 1231231231", "12", "scarico rifiuti", "sacchi di spazzatura con vetro e plastica"),
-                        Order("9 gennaio","192", "Lorenzo", "Lat 1231231, Long 1231231231", "12", "sversamento d'acqua", "sacchi di spazzatura con vetro e plastica"),
-                        Order("6 gennaio","193", "Lorenzo", "Lat 1231231, Long 1231231231", "12", "olio e petrolio", "sacchi di spazzatura con vetro e plastica"),
+                        Container(
+                            alignment: Alignment.centerLeft,
+                            child: _title()),
+                        Expanded(
+                          child: Container(
+                              alignment: Alignment.centerRight,
+                              child: _searchField(searchcontroller),),
+                        ),
 
                       ],
                     ),
                   ),
-                ),
-              ),
+                  SingleChildScrollView(
+                    child: Container(
+                      margin: EdgeInsets.only(left: width * 0.1, right: width * 0.1),
+                      padding: EdgeInsets.only(left: width * 0.1, right: width * 0.1),
+                      decoration: BoxDecoration(
 
-            ],
-          )
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(40)),
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Order("11 gennaio 2021","191", "Lorenzo", "Lat 1231231, Long 1231231231", "12", "scarico rifiuti", "sacchi di spazzatura con vetro e plastica"),
+                            Order("9 gennaio","192", "Lorenzo", "Lat 1231231, Long 1231231231", "12", "sversamento d'acqua", "sacchi di spazzatura con vetro e plastica"),
+                            Order("6 gennaio","193", "Lorenzo", "Lat 1231231, Long 1231231231", "12", "olio e petrolio", "sacchi di spazzatura con vetro e plastica"),
+
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                ],
+              )
 
         ),
+          Container(
+            height: 50,
+            color: Colors.blueGrey,
+          ),
+            ],
+          ),
       ),),
       drawer: MyDrawer(),
     );
