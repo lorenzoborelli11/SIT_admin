@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:math' as math show pi;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore_web/cloud_firestore_web.dart';
+import 'package:latlng/latlng.dart';
 
 import "package:latlong/latlong.dart" as LatLng;
+import 'package:latlong/latlong.dart';
 import 'package:map_controller/map_controller.dart';
 import 'package:sit_lb_2021/routes/drawer.dart';
 import 'package:sit_lb_2021/utils/dragmarker.dart';
@@ -43,11 +47,29 @@ class _MapsState extends State<Maps> {
 
   final _advancedDrawerController = AdvancedDrawerController();
 
-  Function postSegnalazione(
-      LatLng, DateTime date, String tiposegnalaz, String descrizione,
-      {String image}) {
+
+  CollectionReference _segnalaz = FirebaseFirestore.instance.collection('segnalazioni');
+
+
+  Future<void> postSegnalazione(
+      String ltg, String date, String tiposegnalaz, String descrizione,
+      {String image}) async {
+
+
+    await _segnalaz.add({
+      "coord": ltg,
+      "date": date,
+      "descriz": descrizione,
+      "image": image,
+      "type" : tiposegnalaz
+    });
+
+
 
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -216,10 +238,15 @@ class _MapsState extends State<Maps> {
                                         ),
                                         child: MaterialButton(
                                           onPressed: () {
-                                            postSegnalazione(point, DateTime.now(), tiposegnalazione.text, descrizione.text);
+                                            postSegnalazione(point.toString(), DateTime.now().toString(), tiposegnalazione.text, descrizione.text);
                                             //print(point);
                                             //print(DateTime.now());
                                             //print( tiposegnalazione.text + descrizione.text);
+
+
+                                            Navigator.push(
+                                                context, MaterialPageRoute(builder: (context) => Maps(),));
+
                                             Fluttertoast.showToast(
                                             msg:
                                             "Grazie! La tua segnalazione è avvenuta con successo!",
@@ -310,53 +337,33 @@ class _MapsState extends State<Maps> {
           SizedBox(
             height: 5,
           ),
-          TextField(
-              controller: controller,
-              obscureText: isPassword,
-              decoration: InputDecoration(
-                  border: new OutlineInputBorder(
-                    borderRadius: const BorderRadius.all(
-                      const Radius.circular(12.0),
+          Container(
+            height: 40,
+            child: TextField(
+                controller: controller,
+                obscureText: isPassword,
+                decoration: InputDecoration(
+                    border: new OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(
+                        const Radius.circular(8.0),
+                      ),
                     ),
-                  ),
-                  fillColor: Color(0xfff3f3f4),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                      borderSide: BorderSide(
-                        color: Colors.black,
-                      )),
-                  labelStyle: new TextStyle(
-                    color: Colors.red.shade900,
-                  ),
-                  filled: true))
+                    fillColor: Color(0xfff3f3f4),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                        borderSide: BorderSide(
+                          color: Colors.black,
+                        )),
+                    labelStyle: new TextStyle(
+                      color: Colors.red.shade900,
+                    ),
+                    filled: true)),
+          )
         ],
       ),
     );
   }
 
-  Widget _submitSegnala() {
-    return Container(
-      child: Ink(
-        decoration: BoxDecoration(
-          color: Colors.red.shade900,
-          borderRadius: BorderRadius.all(Radius.circular(40)),
-        ),
-        child: MaterialButton(
-          onPressed: () {},
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              vertical: 10,
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              'Segnala',
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   void _handleMenuButtonPressed() {
     // NOTICE: Manage Advanced Drawer state through the Controller.

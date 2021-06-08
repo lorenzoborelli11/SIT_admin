@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:sit_lb_2021/routes/firebase_segnalaz.dart';
 import 'package:sit_lb_2021/routes/homepage.dart';
 import 'package:sit_lb_2021/routes/map.dart';
-import 'package:sit_lb_2021/routes/segnalazioni.dart';
 import 'package:sit_lb_2021/service/authenticationservice.dart';
 import 'package:provider/provider.dart';
 

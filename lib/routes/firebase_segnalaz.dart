@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,8 +10,8 @@ class Segnalazioni extends StatefulWidget {
 }
 
 class _SegnalazioniState extends State<Segnalazioni> {
-  final _advancedDrawerController = AdvancedDrawerController();
 
+  final _advancedDrawerController = AdvancedDrawerController();
   TextEditingController searchcontroller = TextEditingController();
 
   Widget _searchField( TextEditingController controller,
@@ -78,6 +79,7 @@ class _SegnalazioniState extends State<Segnalazioni> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -94,8 +96,8 @@ class _SegnalazioniState extends State<Segnalazioni> {
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-            elevation: 0,
-            backgroundColor: Colors.transparent,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
@@ -107,65 +109,74 @@ class _SegnalazioniState extends State<Segnalazioni> {
               },
             ),
           ),
-          
+
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                color: Colors.blueGrey,
+        body: StreamBuilder(
+      stream: FirebaseFirestore.instance.collection('segnalazioni').snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
 
-
+            return SingleChildScrollView(
               child: Column(
                 children: [
-                  Container(padding: EdgeInsets.only(left:width * 0.1+ 20, right: width * 0.1 + 20, top: 30, bottom: 30),
-                    child: Row(
-                      children: [
-                        Container(
-                            alignment: Alignment.centerLeft,
-                            child: _title()),
-                        Expanded(
-                          child: Container(
-                              alignment: Alignment.centerRight,
-                              child: _searchField(searchcontroller),),
-                        ),
+                  Container(
+                      color: Colors.blueGrey,
+                      child: Column(
+                        children: [
+                          Container(padding: EdgeInsets.only(left:width * 0.1+ 20, right: width * 0.1 + 20, top: 30, bottom: 30),
+                            child: Row(
+                              children: [
+                                Container(
+                                    alignment: Alignment.centerLeft,
+                                    child: _title()),
+                                Expanded(
+                                  child: Container(
+                                    alignment: Alignment.centerRight,
+                                    child: _searchField(searchcontroller),),
+                                ),
 
-                      ],
-                    ),
+                              ],
+                            ),
+                          ),
+                          SingleChildScrollView(
+                            child: Container(
+                              margin: EdgeInsets.only(left: width * 0.1, right: width * 0.1),
+                              padding: EdgeInsets.only(left: width * 0.1, right: width * 0.1),
+                              decoration: BoxDecoration(
+
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(Radius.circular(40)),
+                              ),
+                              child: ListView(
+                                  shrinkWrap: true,
+                                children: snapshot.data.docs.map((DocumentSnapshot document)  {
+                                  return Order( getDate(document["date"].toString()), document.id, "", getCoord(document["coord"]), "", document["type"], document["descriz"]);
+                               }).toList(),
+                                  ),
+                            ),
+                          ),
+
+                        ],
+                      )
+
                   ),
-                  SingleChildScrollView(
-                    child: Container(
-                      margin: EdgeInsets.only(left: width * 0.1, right: width * 0.1),
-                      padding: EdgeInsets.only(left: width * 0.1, right: width * 0.1),
-                      decoration: BoxDecoration(
-
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(40)),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Order("11 gennaio 2021","191", "Lorenzo", "Lat 1231231, Long 1231231231", "12", "scarico rifiuti", "sacchi di spazzatura con vetro e plastica"),
-                            Order("9 gennaio","192", "Lorenzo", "Lat 1231231, Long 1231231231", "12", "sversamento d'acqua", "sacchi di spazzatura con vetro e plastica"),
-                            Order("6 gennaio","193", "Lorenzo", "Lat 1231231, Long 1231231231", "12", "olio e petrolio", "sacchi di spazzatura con vetro e plastica"),
-
-                          ],
-                        ),
-                      ),
-                    ),
+                  Container(
+                    height: 50,
+                    color: Colors.blueGrey,
                   ),
-
                 ],
-              )
+              ),
 
-        ),
-          Container(
-            height: 50,
-            color: Colors.blueGrey,
-          ),
-            ],
-          ),
-      ),),
+
+            );
+
+      },
+    ),
+    ),
       drawer: MyDrawer(),
     );
   }
@@ -176,7 +187,17 @@ class _SegnalazioniState extends State<Segnalazioni> {
     _advancedDrawerController.showDrawer();
   }
 
-  Widget Order(dynamic date, dynamic numberorder, dynamic name, dynamic coordinate,
+  getDate(String data) {
+
+      return data.substring(0, 16);
+  }
+
+  getCoord(String data) {
+
+    return data.substring(7, 46);
+    }
+
+  Widget Order(String date, dynamic numberorder, dynamic name, dynamic coordinate,
       dynamic price, dynamic status, dynamic descrizione) {
     return GestureDetector(
       child: SingleChildScrollView(
@@ -237,12 +258,14 @@ class _SegnalazioniState extends State<Segnalazioni> {
                         child: Container(
                           alignment: Alignment.topRight,
                           child: IconButton(
-                            icon: Icon(Icons.add_a_photo_rounded),
+                            icon: Icon(Icons.delete_forever),
                             iconSize: 35,
                             color: Colors.blueGrey,
-                          ),
+                            onPressed: () {
+                            },
                           ),
                         ),
+                      ),
 
                     ],
                   ),
@@ -277,15 +300,15 @@ class _SegnalazioniState extends State<Segnalazioni> {
                             ),
                             child: Center(
                                 child: Text(
-                              "$status",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                letterSpacing: 1.1,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: "Montserrat",
-                              ),
-                            )),
+                                  "$status",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 15,
+                                    letterSpacing: 1.1,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: "Montserrat",
+                                  ),
+                                )),
                           ),
                         ],
                       ),
@@ -302,7 +325,7 @@ class _SegnalazioniState extends State<Segnalazioni> {
                         fontWeight: FontWeight.w700,
                         fontFamily: "Montserrat",
                       ),
-                  ),),
+                    ),),
                   SizedBox(height: 10,),
                   Divider(
                     color: Color(0xFF989898),
