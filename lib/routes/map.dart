@@ -319,6 +319,95 @@ class _MapsState extends State<Maps> {
                       color: Colors.red.shade900,
                       iconSize: 30,
                       onPressed: () {
+                        final width = MediaQuery
+                            .of(context)
+                            .size
+                            .width;
+                        final height = MediaQuery
+                            .of(context)
+                            .size
+                            .width;
+                        Widget OkButton = FlatButton(
+                          child: Text("Ok", style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.red.shade900,
+                            fontWeight: FontWeight.w800,
+                            fontFamily: "Montserrat",
+                          ),),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        );
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return Container(
+                              height: height * 0.5,
+                              width: width * 0.3,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(10),
+                                    topRight: Radius.circular(10),
+                                    bottomLeft: Radius.circular(10),
+                                    bottomRight:
+                                    Radius.circular(10)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey
+                                        .withOpacity(0.8),
+                                    spreadRadius: 5,
+                                    blurRadius: 10,
+                                    offset: Offset(0,
+                                        3), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                              child: AlertDialog(
+                                title: Text(
+                                  "Descrizione" ,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w800,
+                                    fontFamily: "Montserrat",
+                                  ),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(20.0),
+                                ),
+                                elevation: 0,
+                                backgroundColor: Color(0xFFEEEEEE),
+                                content: Text(
+                                  "" +
+
+                                      " \nData: " +
+                                      getDate(docs.docs[i].data()['date']) +
+                                      " \nTipo segnalazione: " +
+                                      docs.docs[i].data()['type'] +
+                                      "\nDescrizione: " +
+                                      docs.docs[i].data()['descriz'] +
+                                      " \nLatitudine: " +
+                                      docs.docs[i].data()['coordlat'] +
+                                      " \nLongitudine: " +
+                                      docs.docs[i].data()['coordlong'],
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: "Montserrat",
+                                  ),
+                                ),
+                                actions: [
+                                  OkButton,
+
+                                ],
+                            ),
+                            );
+                          },
+                        );
+
+
 
                       },
                     ),),),);
@@ -329,6 +418,11 @@ class _MapsState extends State<Maps> {
     return markerzz;
   }
 
+}
+
+getDate(String data) {
+
+  return data.substring(0, 16);
 }
 
 CollectionReference _segnalaz = FirebaseFirestore.instance.collection(
