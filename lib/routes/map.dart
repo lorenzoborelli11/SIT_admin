@@ -21,10 +21,12 @@ class Maps extends StatefulWidget {
 }
 
 class _MapsState extends State<Maps> {
+
+  List<Marker> marker = <Marker>[];
+  final _advancedDrawerController = AdvancedDrawerController();
   MapController mapController;
   StatefulMapController statefulMapController;
   StreamSubscription<StatefulMapControllerStateChange> sub;
-
   TextEditingController tiposegnalazione = TextEditingController();
   TextEditingController descrizione = TextEditingController();
 
@@ -41,40 +43,25 @@ class _MapsState extends State<Maps> {
     sub = statefulMapController.changeFeed.listen((change) => setState(() {}));
 
     // this is for CollapseSidebar
-
+    getMarkers();
     super.initState();
   }
 
-  final _advancedDrawerController = AdvancedDrawerController();
-
-
-  CollectionReference _segnalaz = FirebaseFirestore.instance.collection('segnalazioni');
-
-
-  Future<void> postSegnalazione(
-      String ltg, String date, String tiposegnalaz, String descrizione,
-      {String image}) async {
-
-
-    await _segnalaz.add({
-      "coord": ltg,
-      "date": date,
-      "descriz": descrizione,
-      "image": image,
-      "type" : tiposegnalaz
-    });
-
-
-
+  void _handleMenuButtonPressed() {
+    // NOTICE: Manage Advanced Drawer state through the Controller.
+    // _advancedDrawerController.value = AdvancedDrawerValue.visible();
+    _advancedDrawerController.showDrawer();
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    final width = MediaQuery.of(context).size.width;
+    var size = MediaQuery
+        .of(context)
+        .size;
+    final width = MediaQuery
+        .of(context)
+        .size
+        .width;
     return AdvancedDrawer(
       backdropColor: Colors.blueGrey,
       controller: _advancedDrawerController,
@@ -94,7 +81,10 @@ class _MapsState extends State<Maps> {
               text: TextSpan(
                   text: 'S',
                   style: GoogleFonts.portLligatSans(
-                    textStyle: Theme.of(context).textTheme.display1,
+                    textStyle: Theme
+                        .of(context)
+                        .textTheme
+                        .display1,
                     fontSize: 30,
                     fontWeight: FontWeight.w700,
                     color: Colors.red.shade900,
@@ -107,7 +97,7 @@ class _MapsState extends State<Maps> {
                     TextSpan(
                       text: ' Hydrography',
                       style:
-                          TextStyle(color: Colors.red.shade900, fontSize: 30),
+                      TextStyle(color: Colors.red.shade900, fontSize: 30),
                     ),
                   ]),
             ),
@@ -125,6 +115,29 @@ class _MapsState extends State<Maps> {
             ),
           ),
         ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            Fluttertoast.showToast(
+                msg:
+                "Muovi il cursore nero nella posizione desiderata, successivamente tieni premuto lo stesso per 2 secondi.",
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Color(0xFF424242),
+                textColor: Colors.white,
+                fontSize: 16.0);
+          },
+          label: const Text(
+            'Segnala',
+            style: TextStyle(color: Colors.white),
+          ),
+          icon: const Icon(
+            Icons.add_circle_rounded,
+            color: Colors.white,
+          ),
+          backgroundColor: Colors.red.shade900,
+        ),
+
         body: Stack(
           children: [
             FlutterMap(
@@ -142,53 +155,14 @@ class _MapsState extends State<Maps> {
                 PolygonLayerOptions(polygons: statefulMapController.polygons),
                 TileLayerOptions(
                     urlTemplate:
-                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    subdomains: ['a', 'b', 'c']),
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    subdomains: ['a', 'b', 'c']
+                ),
+
+
                 MarkerLayerOptions(
-                  markers: [
-                    Marker(
-                      width: 80.0,
-                      height: 80.0,
-                      point: LatLng.LatLng(46.1503, 12.2171),
-                      builder: (ctx) => Container(
-                          child: IconButton(
-                        icon: Icon(Icons.room_sharp),
-                        color: Colors.red.shade900,
-                        iconSize: 30,
-                        onPressed: () {
-                          showModalBottomSheet(
-                              context: context,
-                              builder: (builder) {
-                                return Container(
-                                  color: Colors.white,
-                                  child: Center(child: Text("blblaaasdas")),
-                                );
-                              });
-                        },
-                      )),
-                    ),
-                    Marker(
-                      width: 80.0,
-                      height: 80.0,
-                      point: LatLng.LatLng(46.26, 12.29),
-                      builder: (ctx) => Container(
-                          child: IconButton(
-                        icon: Icon(Icons.report_rounded),
-                        color: Colors.redAccent,
-                        iconSize: 30,
-                        onPressed: () {
-                          showModalBottomSheet(
-                              context: context,
-                              builder: (builder) {
-                                return Container(
-                                  color: Colors.white,
-                                  child: Center(child: Text("blblaaasdas")),
-                                );
-                              });
-                        },
-                      )),
-                    ),
-                  ],
+                    markers: getMarkers(),
+
                 ),
                 DragMarkerPluginOptions(
                   markers: [
@@ -230,47 +204,59 @@ class _MapsState extends State<Maps> {
                                         SizedBox(
                                           height: 35,
                                         ),
-                                    Container(
-                                      child: Ink(
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.shade900,
-                                          borderRadius: BorderRadius.all(Radius.circular(40)),
-                                        ),
-                                        child: MaterialButton(
-                                          onPressed: () {
-                                            postSegnalazione(point.toString(), DateTime.now().toString(), tiposegnalazione.text, descrizione.text);
-                                            //print(point);
-                                            //print(DateTime.now());
-                                            //print( tiposegnalazione.text + descrizione.text);
-
-
-                                            Navigator.push(
-                                                context, MaterialPageRoute(builder: (context) => Maps(),));
-
-                                            Fluttertoast.showToast(
-                                            msg:
-                                            "Grazie! La tua segnalazione è avvenuta con successo!",
-                                            toastLength: Toast.LENGTH_LONG,
-                                            gravity: ToastGravity.CENTER,
-                                            timeInSecForIosWeb: 1,
-                                            backgroundColor: Color(0xFF424242),
-                                            textColor: Colors.white,
-                                            fontSize: 16.0);
-
-                                          },
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                              vertical: 10,
+                                        Container(
+                                          child: Ink(
+                                            decoration: BoxDecoration(
+                                              color: Colors.red.shade900,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(40)),
                                             ),
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              'Segnala',
-                                              style: TextStyle(fontSize: 20, color: Colors.white),
+                                            child: MaterialButton(
+                                              onPressed: () {
+                                                postSegnalazione(
+                                                    point.latitude.toString(),
+                                                    point.longitude.toString(),
+                                                    DateTime.now().toString(),
+                                                    tiposegnalazione.text,
+                                                    descrizione.text);
+
+                                                //print(point);
+                                                //print(DateTime.now());
+                                                //print( tiposegnalazione.text + descrizione.text);
+
+
+                                                Navigator.push(
+                                                    context, MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      Maps(),));
+
+                                                Fluttertoast.showToast(
+                                                    msg:
+                                                    "Grazie! La tua segnalazione è avvenuta con successo!",
+                                                    toastLength: Toast
+                                                        .LENGTH_LONG,
+                                                    gravity: ToastGravity
+                                                        .CENTER,
+                                                    timeInSecForIosWeb: 1,
+                                                    backgroundColor: Color(
+                                                        0xFF424242),
+                                                    textColor: Colors.white,
+                                                    fontSize: 16.0);
+                                              },
+                                              child: Container(
+                                                padding: EdgeInsets.symmetric(
+                                                  vertical: 10,
+                                                ),
+                                                alignment: Alignment.center,
+                                                child: Text(
+                                                  'Segnala',
+                                                  style: TextStyle(fontSize: 20,
+                                                      color: Colors.white),
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ),
                                         SizedBox(
                                           height: 20,
                                         ),
@@ -294,80 +280,117 @@ class _MapsState extends State<Maps> {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            Fluttertoast.showToast(
-                msg:
-                    "Muovi il cursore nero nella posizione desiderata, successivamente tieni premuto lo stesso per 2 secondi.",
-                toastLength: Toast.LENGTH_LONG,
-                gravity: ToastGravity.BOTTOM,
-                timeInSecForIosWeb: 1,
-                backgroundColor: Color(0xFF424242),
-                textColor: Colors.white,
-                fontSize: 16.0);
-          },
-          label: const Text(
-            'Segnala',
-            style: TextStyle(color: Colors.white),
-          ),
-          icon: const Icon(
-            Icons.add_circle_rounded,
-            color: Colors.white,
-          ),
-          backgroundColor: Colors.red.shade900,
-        ),
+
+
       ),
+
       drawer: MyDrawer(),
     );
   }
 
-  Widget _segnalaField(String title, TextEditingController controller,
-      {bool isPassword = false}) {
-    return Container(
-      margin: EdgeInsets.symmetric(
-        vertical: 5,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Container(
-            height: 40,
-            child: TextField(
-                controller: controller,
-                obscureText: isPassword,
-                decoration: InputDecoration(
-                    border: new OutlineInputBorder(
-                      borderRadius: const BorderRadius.all(
-                        const Radius.circular(8.0),
-                      ),
-                    ),
-                    fillColor: Color(0xfff3f3f4),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                        borderSide: BorderSide(
-                          color: Colors.black,
-                        )),
-                    labelStyle: new TextStyle(
+
+  _setupMarker() async {
+    List<Marker> _marker;
+    marker = await getMarkers();
+    setState(() {
+      _marker = marker;
+    });
+  }
+
+  List<Marker> getMarkers() {
+
+
+
+    List<Marker> markerzz = <Marker>[];
+
+
+      FirebaseFirestore.instance.collection("segnalazioni").get().then((docs) {
+        if (docs.docs.isNotEmpty) {
+          for (int i = 0; i < docs.docs.length; ++i) {
+            markerzz.insert(i, Marker(
+              width: 80.0,
+              height: 80.0,
+              point: LatLng.LatLng(
+                  double.parse(docs.docs[i].data()['coordlat']),double.parse( docs.docs[i].data()['coordlong'])),
+              builder: (ctx) =>
+                  Container(
+                    child: IconButton(
+                      icon: Icon(Icons.room_sharp),
                       color: Colors.red.shade900,
-                    ),
-                    filled: true)),
-          )
-        ],
-      ),
-    );
+                      iconSize: 30,
+                      onPressed: () {
+
+                      },
+                    ),),),);
+          }
+
+      }
+      });
+    return markerzz;
   }
 
-
-  void _handleMenuButtonPressed() {
-    // NOTICE: Manage Advanced Drawer state through the Controller.
-    // _advancedDrawerController.value = AdvancedDrawerValue.visible();
-    _advancedDrawerController.showDrawer();
-  }
 }
+
+CollectionReference _segnalaz = FirebaseFirestore.instance.collection(
+    'segnalazioni');
+
+
+Future<void> postSegnalazione(String lat, String long, String date,
+    String tiposegnalaz, String descrizione,
+    {String image}) async {
+  await _segnalaz.add({
+    "coordlat": lat,
+    "coordlong": long,
+    "date": date,
+    "descriz": descrizione,
+    "image": image,
+    "type": tiposegnalaz
+  });
+}
+
+
+Widget _segnalaField(String title, TextEditingController controller,
+    {bool isPassword = false}) {
+  return Container(
+    margin: EdgeInsets.symmetric(
+      vertical: 5,
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          title,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        Container(
+          height: 40,
+          child: TextField(
+              controller: controller,
+              obscureText: isPassword,
+              decoration: InputDecoration(
+                  border: new OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(8.0),
+                    ),
+                  ),
+                  fillColor: Color(0xfff3f3f4),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                      )),
+                  labelStyle: new TextStyle(
+                    color: Colors.red.shade900,
+                  ),
+                  filled: true)),
+        )
+      ],
+    ),
+  );
+}
+
+
+

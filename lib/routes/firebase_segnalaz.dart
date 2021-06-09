@@ -154,7 +154,7 @@ class _SegnalazioniState extends State<Segnalazioni> {
                               child: ListView(
                                   shrinkWrap: true,
                                 children: snapshot.data.docs.map((DocumentSnapshot document)  {
-                                  return Order( getDate(document["date"].toString()), document.id, "", getCoord(document["coord"]), "", document["type"], document["descriz"]);
+                                  return Order( getDate(document["date"].toString()), document.id, "", document["coordlat"], document["coordlong"] , "", document["type"], document["descriz"]);
                                }).toList(),
                                   ),
                             ),
@@ -197,7 +197,7 @@ class _SegnalazioniState extends State<Segnalazioni> {
     return data.substring(7, 46);
     }
 
-  Widget Order(String date, dynamic numberorder, dynamic name, dynamic coordinate,
+  Widget Order(String date, dynamic numberorder, dynamic name, dynamic lat, dynamic long,
       dynamic price, dynamic status, dynamic descrizione) {
     return GestureDetector(
       child: SingleChildScrollView(
@@ -275,7 +275,7 @@ class _SegnalazioniState extends State<Segnalazioni> {
                   Container(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      'Coordinate: ' + "${coordinate}",
+                      'Coordinate:[ ' + " Lat: " "${lat}" " Long: " "${long}" "]",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 13,
