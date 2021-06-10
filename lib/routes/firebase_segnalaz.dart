@@ -192,13 +192,10 @@ class _SegnalazioniState extends State<Segnalazioni> {
       return data.substring(0, 16);
   }
 
-  getCoord(String data) {
 
-    return data.substring(7, 46);
-    }
 
   Widget Order(String date, dynamic numberorder, dynamic name, dynamic lat, dynamic long,
-      dynamic price, dynamic status, dynamic descrizione) {
+      dynamic price, dynamic status, dynamic descrizione,) {
     return GestureDetector(
       child: SingleChildScrollView(
         child: Column(
@@ -262,10 +259,18 @@ class _SegnalazioniState extends State<Segnalazioni> {
                             iconSize: 35,
                             color: Colors.blueGrey,
                             onPressed: () {
-                            },
+                              FirebaseFirestore.instance
+                                  .collection("segnalazioni")
+                                  .get().then((value){
+                                  FirebaseFirestore.instance.collection("segnalazioni").doc(numberorder).delete().then((value){
+                                    print("Deleted document with Successo!");
+                                  });
+                                });
+                              }),
+
                           ),
                         ),
-                      ),
+
 
                     ],
                   ),
@@ -275,7 +280,7 @@ class _SegnalazioniState extends State<Segnalazioni> {
                   Container(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      'Coordinate:[ ' + " Lat: " "${lat}" " Long: " "${long}" "]",
+                      'Coordinate:[' + " Lat: " "${lat}" " Long: " "${long}" "]",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 13,

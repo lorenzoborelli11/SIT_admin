@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math show pi;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_map/plugin_api.dart';
@@ -12,6 +13,7 @@ import 'package:latlng/latlng.dart';
 import "package:latlong/latlong.dart" as LatLng;
 import 'package:latlong/latlong.dart';
 import 'package:map_controller/map_controller.dart';
+import 'package:select_form_field/select_form_field.dart';
 import 'package:sit_lb_2021/routes/drawer.dart';
 import 'package:sit_lb_2021/utils/dragmarker.dart';
 
@@ -29,12 +31,18 @@ class _MapsState extends State<Maps> {
   StreamSubscription<StatefulMapControllerStateChange> sub;
   TextEditingController tiposegnalazione = TextEditingController();
   TextEditingController descrizione = TextEditingController();
+  int selectedValue;
+  String buttonText = "Sversamento di liquidi in acqua";
 
   @override
   void initState() {
+
+    getMarkers();
+
     // intialize the controllers
     mapController = MapController();
     statefulMapController = StatefulMapController(mapController: mapController);
+
 
     // wait for the controller to be ready before using it
     statefulMapController.onReady
@@ -42,8 +50,8 @@ class _MapsState extends State<Maps> {
 
     sub = statefulMapController.changeFeed.listen((change) => setState(() {}));
 
-    // this is for CollapseSidebar
-    getMarkers();
+
+
     super.initState();
   }
 
@@ -52,6 +60,31 @@ class _MapsState extends State<Maps> {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
+
+  final List<Map<String, dynamic>> _items = [
+    {
+      'value': 'Sversamento di liquidi in acqua',
+      'label': 'Sversamento di liquidi in acqua',
+    },
+    {
+      'value': 'Scarico di materiali in acqua',
+      'label': 'Scarico di materiali in acqua',
+    },
+    {
+      'value': 'Presenza di un deposito di rifiuti vicino ad un corso d’acqua o lago',
+      'label': 'Presenza di un deposito di rifiuti vicino ad un corso d’acqua o lago',
+    },
+    {
+      'value': 'Presenza di schiuma nelle acque',
+      'label': 'Presenza di schiuma nelle acque',
+    },
+    {
+      'value': 'Danni alla fauna ittica',
+      'label': 'Danni alla fauna ittica',
+    },
+  ];
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -194,8 +227,17 @@ class _MapsState extends State<Maps> {
                                         SizedBox(
                                           height: 15,
                                         ),
-                                        _segnalaField("Tipo di segnalazione: ",
-                                            tiposegnalazione),
+                                    SelectFormField(
+                                      controller: tiposegnalazione,
+                                      type: SelectFormFieldType.dropdown, // or can be dialog
+                                      labelText: 'Seleziona il tuo tipo di segnalazione',
+                                      items: _items,
+                                      onChanged: (val) => print(val),
+                                      onSaved: (val) => print(val),
+                                    ),
+
+
+
                                         SizedBox(
                                           height: 15,
                                         ),
@@ -214,8 +256,8 @@ class _MapsState extends State<Maps> {
                                             child: MaterialButton(
                                               onPressed: () {
                                                 postSegnalazione(
-                                                    point.latitude.toString(),
-                                                    point.longitude.toString(),
+                                                    double.parse(point.latitude.toStringAsFixed(2)),
+                                                    double.parse(point.longitude.toStringAsFixed(2)),
                                                     DateTime.now().toString(),
                                                     tiposegnalazione.text,
                                                     descrizione.text);
@@ -289,13 +331,7 @@ class _MapsState extends State<Maps> {
   }
 
 
-  _setupMarker() async {
-    List<Marker> _marker;
-    marker = await getMarkers();
-    setState(() {
-      _marker = marker;
-    });
-  }
+
 
   List<Marker> getMarkers() {
 
@@ -311,7 +347,7 @@ class _MapsState extends State<Maps> {
               width: 80.0,
               height: 80.0,
               point: LatLng.LatLng(
-                  double.parse(docs.docs[i].data()['coordlat']),double.parse( docs.docs[i].data()['coordlong'])),
+                  double.parse(docs.docs[i].data()['coordlat'].toString()), double.parse(docs.docs[i].data()['coordlong'].toString())),
               builder: (ctx) =>
                   Container(
                     child: IconButton(
@@ -367,7 +403,7 @@ class _MapsState extends State<Maps> {
                                   "Descrizione" ,
                                   style: TextStyle(
                                     fontSize: 20,
-                                    color: Colors.black,
+                                    color: Colors.red.shade900,
                                     fontWeight: FontWeight.w800,
                                     fontFamily: "Montserrat",
                                   ),
@@ -388,13 +424,13 @@ class _MapsState extends State<Maps> {
                                       "\nDescrizione: " +
                                       docs.docs[i].data()['descriz'] +
                                       " \nLatitudine: " +
-                                      docs.docs[i].data()['coordlat'] +
+                                      (docs.docs[i].data()['coordlat']).toString() +
                                       " \nLongitudine: " +
-                                      docs.docs[i].data()['coordlong'],
+                                      (docs.docs[i].data()['coordlong']).toString(),
                                   style: TextStyle(
                                     fontSize: 15,
                                     color: Colors.black,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w500,
                                     fontFamily: "Montserrat",
                                   ),
                                 ),
@@ -429,7 +465,7 @@ CollectionReference _segnalaz = FirebaseFirestore.instance.collection(
     'segnalazioni');
 
 
-Future<void> postSegnalazione(String lat, String long, String date,
+Future<void> postSegnalazione(double lat, double long, String date,
     String tiposegnalaz, String descrizione,
     {String image}) async {
   await _segnalaz.add({
