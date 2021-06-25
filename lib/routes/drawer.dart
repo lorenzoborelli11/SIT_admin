@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:sit_lb_2021/routes/centraline.dart';
 import 'package:sit_lb_2021/routes/firebase_segnalaz.dart';
 import 'package:sit_lb_2021/routes/homepage.dart';
 import 'package:sit_lb_2021/routes/map.dart';
@@ -59,6 +60,19 @@ class _MyDrawerState extends State<MyDrawer> {
               ); },
                 leading: Icon(Icons.map),
                 title: Text('Segnalazioni'),
+              ),
+              ListTile(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Centraline(),
+                    ),
+                  );
+                },
+
+
+                leading: Icon(Icons.album_outlined),
+                title: Text('Idrografia e Centraline'),
               ),
               ListTile(
                 onTap: () {
